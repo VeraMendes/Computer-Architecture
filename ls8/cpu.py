@@ -7,7 +7,11 @@ class CPU:
 
     def __init__(self):
         """Construct a new CPU."""
-        pass
+        self.pc = 0
+        self.register = [0] * 8
+        self.ram = [0] * (256 * 8)
+        self.instructions = {}
+        self.running = True
 
     def load(self):
         """Load a program into memory."""
@@ -18,12 +22,12 @@ class CPU:
 
         program = [
             # From print8.ls8
-            0b10000010, # LDI R0,8
-            0b00000000,
-            0b00001000,
-            0b01000111, # PRN R0
-            0b00000000,
-            0b00000001, # HLT
+            0b10000010,  # LDI R0,8
+            0b00000000,  # NOP: Do nothing for this instruction.
+            0b00001000,  # this is the number 8
+            0b01000111,  # PRN R0
+            0b00000000,  # NOP: Do nothing for this instruction.
+            0b00000001,  # HLT
         ]
 
         for instruction in program:
@@ -37,8 +41,24 @@ class CPU:
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
         #elif op == "SUB": etc
+        elif op == "SUB":
+            self.reg[reg_a] -= self.reg[reg_b]
+        elif op == "MULT":
+            self.reg[reg_a] *= self.reg[reg_b]
+        elif op == "DIV":
+            self.reg[reg_a] /= self.reg[reg_b]
+        elif op == "FL_DIV":
+            self.reg[reg_a] //= self.reg[reg_b]
+        elif op == "MOD":
+            self.reg[reg_a] % self.reg[reg_b]
         else:
             raise Exception("Unsupported ALU operation")
+    
+    def ram_read(self, address):
+        return self.memory[adress]
+
+    def ram_write(self, value, address):
+        self.memory[address] = value
 
     def trace(self):
         """
@@ -62,4 +82,15 @@ class CPU:
 
     def run(self):
         """Run the CPU."""
-        pass
+        self.running = True
+
+        while self.running == True:
+            if:
+            elif:
+            elif:
+            else:
+		        print("Unknown instruction")
+		        running = False
+
+test = CPU()
+test.run()
