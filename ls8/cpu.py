@@ -92,11 +92,6 @@ class CPU:
 
         print()
 
-    # # instructions
-    # LDI = 0b10000010
-    # HLT = 0b00000001
-    # PRN = 0b01000111
-
     def run(self):
         """Run the CPU."""
         self.running = True
@@ -112,8 +107,6 @@ class CPU:
                 self.ram_write(operand_b, operand_a)
                 self.pc += 3
             elif IR == self.PRN:  # PRN
-                # operand_a = self.ram_read(self.pc + 1)
-                # self.ram_write(operand_b, operand_a)
                 print(f'printing... {self.ram[operand_a]}')           
                 self.pc += 2
             elif IR == self.HLT:  # HALT
@@ -121,4 +114,3 @@ class CPU:
             else:    
                 print("Unknown instruction")
                 self.running = False
-
