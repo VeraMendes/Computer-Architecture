@@ -11,3 +11,4 @@ cpu.load(sys.argv[1])
 cpu.run()
 
 # use: python ls8.py examples/print8.ls8
+#            argv[0]       argv[1]

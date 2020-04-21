@@ -113,27 +113,29 @@ class CPU:
         while self.running is True:
 
             IR = self.ram_read(self.pc)
+            inst_len = ((IR & 0b11000000) >> 6) + 1 # max 3 operands
 
             if IR == LDI:    # LDI
                 operand_a = self.ram_read(self.pc + 1)
                 operand_b = self.ram_read(self.pc + 2)
                 self.reg[operand_a] = operand_b
                 result = operand_b
-                self.pc += 3
+                # self.pc += 3
             elif IR == MULT:    # MULT
                 operand_a = self.ram_read(self.pc + 1)
                 operand_b = self.ram_read(self.pc + 2)
                 result = self.alu('MULT', operand_a, operand_b)
-                self.pc += 3
+                # self.pc += 3
             elif IR == PRN:  # PRN
                 print(f'printing... {result}')           
-                self.pc += 2
+                # self.pc += 2
             elif IR == HLT:  # HALT
                 self.running = False
             else:    
                 print("Unknown instruction")
                 self.running = False
 
+            self.pc += inst_len
 
 # register [8] [0] [0] [0] [0] [0] [0] [0]
 #          0   0b10000010,  # LDI R0,8                                 pc = 0         OPERATION
