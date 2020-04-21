@@ -8,7 +8,7 @@ class CPU:
     def __init__(self):
         """Construct a new CPU."""
         self.pc = 0
-        self.register = [0] * 8
+        self.reg = [0] * 8
         self.ram = [0] * 256
         self.running = True
         # self.instructions = {}
@@ -42,32 +42,47 @@ class CPU:
 
                 self.ram[address] = int(instruction, 2)
                 address += 1
-                # print(instruction)
 
         # for instruction in program:
         #     self.ram[address] = instruction
         #     address += 1
 
 
-
     def alu(self, op, reg_a, reg_b):
         """ALU operations."""
 
         if op == "ADD":
-            self.reg[reg_a] += self.reg[reg_b]
-        #elif op == "SUB": etc
+            aa = self.reg[reg_a]
+            bb = self.reg[reg_b]
+            self.reg[reg_a] = aa + bb
+            # self.reg[reg_a] += self.reg[reg_b]
+            # return self.reg[reg_a]
         elif op == "SUB":
-            self.reg[reg_a] -= self.reg[reg_b]
+            aa = self.reg[reg_a]
+            bb = self.reg[reg_b]
+            self.reg[reg_a] = aa - bb
+            # self.reg[reg_a] -= self.reg[reg_b]
+            # return self.reg[reg_a]
         elif op == "MULT":
-            self.reg[reg_a] *= self.reg[reg_b]
-        elif op == "DIV":
-            self.reg[reg_a] /= self.reg[reg_b]
-        elif op == "FL_DIV":
-            self.reg[reg_a] //= self.reg[reg_b]
-        elif op == "MOD":
-            self.reg[reg_a] % self.reg[reg_b]
+            aa = self.reg[reg_a]
+            bb = self.reg[reg_b]
+            self.reg[reg_a] = aa * bb
+            # self.reg[reg_a] *= self.reg[reg_b]
+            # return self.reg[reg_a]
+
+        # elif op == "DIV":
+        #     self.reg[reg_a] /= self.reg[reg_b]
+        #     return self.reg[reg_a]
+        # elif op == "FL_DIV":
+        #     self.reg[reg_a] //= self.reg[reg_b]
+        #     return self.reg[reg_a]
+        # elif op == "MOD":
+        #     self.reg[reg_a] %= self.reg[reg_b]
+        #     return self.reg[reg_a]
         else:
             raise Exception("Unsupported ALU operation")
+
+        return self.reg[reg_a]
     
     def ram_read(self, address):
         """Return an address in RAM."""
@@ -107,10 +122,10 @@ class CPU:
         LDI = 0b10000010
         PRN = 0b01000111
         HLT = 0b00000001
+        MULT = 0b10100010
 
         self.running = True
-
-        
+      
         while self.running is True:
 
             IR = self.ram_read(self.pc)
@@ -118,10 +133,16 @@ class CPU:
             if IR == LDI:    # LDI
                 operand_a = self.ram_read(self.pc + 1)
                 operand_b = self.ram_read(self.pc + 2)
-                self.register[operand_a] = operand_b
+                self.reg[operand_a] = operand_b
+                result = operand_b
+                self.pc += 3
+            elif IR == MULT:    # MULT
+                operand_a = self.ram_read(self.pc + 1)
+                operand_b = self.ram_read(self.pc + 2)
+                result = self.alu('MULT', operand_a, operand_b)
                 self.pc += 3
             elif IR == PRN:  # PRN
-                print(f'printing... {self.register[operand_a]}')           
+                print(f'printing... {result}')           
                 self.pc += 2
             elif IR == HLT:  # HALT
                 self.running = False
@@ -138,3 +159,16 @@ class CPU:
 #          4   0b00000000,  # NOP: Do nothing for this instruction.           operand_a
 #          5   0b00000001,  # HLT                                      PC = 5         OPERATION
 #          ends
+
+# 10000010 # LDI R0,8   OP
+# 00000000 # operand_a
+# 00001000 # operand_b NUMBER 8
+# 10000010 # LDI R1,9   OP
+# 00000001 # operand_a
+# 00001001 # operand_b NUMBER 9
+# 10100010 # MUL R0,R1  OP
+# 00000000 # operand_a
+# 00000001 # operand_b
+# 01000111 # PRN R0     OP
+# 00000000 # NOP
+# 00000001 # HLT        OP
