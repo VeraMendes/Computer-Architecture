@@ -136,25 +136,3 @@ class CPU:
                 self.running = False
 
             self.pc += inst_len
-
-# register [8] [0] [0] [0] [0] [0] [0] [0]
-#          0   0b10000010,  # LDI R0,8                                 pc = 0         OPERATION
-#          1   0b00000000,  # NOP: Do nothing for this instruction.    pc+1 = operand_a
-#          2   0b00001000,  # this is the number 8                     pc+2 = operand_b
-#          3   0b01000111,  # PRN R0                                   pc = 3         OPERATION
-#          4   0b00000000,  # NOP: Do nothing for this instruction.           operand_a
-#          5   0b00000001,  # HLT                                      PC = 5         OPERATION
-#          ends
-
-# 10000010 # LDI R0,8   OP
-# 00000000 # operand_a
-# 00001000 # operand_b NUMBER 8
-# 10000010 # LDI R1,9   OP
-# 00000001 # operand_a
-# 00001001 # operand_b NUMBER 9
-# 10100010 # MUL R0,R1  OP
-# 00000000 # operand_a
-# 00000001 # operand_b
-# 01000111 # PRN R0     OP
-# 00000000 # NOP
-# 00000001 # HLT        OP
