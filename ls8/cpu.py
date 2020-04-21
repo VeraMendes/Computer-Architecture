@@ -112,8 +112,8 @@ class CPU:
                 self.ram_write(operand_b, operand_a)
                 self.pc += 3
             elif IR == self.PRN:  # PRN
-                operand_a = self.ram_read(self.pc + 1)
-                self.ram_write(operand_b, operand_a)
+                # operand_a = self.ram_read(self.pc + 1)
+                # self.ram_write(operand_b, operand_a)
                 print(f'printing... {self.ram[operand_a]}')           
                 self.pc += 2
             elif IR == self.HLT:  # HALT
