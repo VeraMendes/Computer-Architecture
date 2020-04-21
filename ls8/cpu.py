@@ -52,23 +52,23 @@ class CPU:
         """ALU operations."""
 
         if op == "ADD":
-            aa = self.reg[reg_a]
-            bb = self.reg[reg_b]
-            self.reg[reg_a] = aa + bb
-            # self.reg[reg_a] += self.reg[reg_b]
-            # return self.reg[reg_a]
+            # aa = self.reg[reg_a]
+            # bb = self.reg[reg_b]
+            # self.reg[reg_a] = aa + bb
+            self.reg[reg_a] += self.reg[reg_b]
+            return self.reg[reg_a]
         elif op == "SUB":
-            aa = self.reg[reg_a]
-            bb = self.reg[reg_b]
-            self.reg[reg_a] = aa - bb
-            # self.reg[reg_a] -= self.reg[reg_b]
-            # return self.reg[reg_a]
+            # aa = self.reg[reg_a]
+            # bb = self.reg[reg_b]
+            # self.reg[reg_a] = aa - bb
+            self.reg[reg_a] -= self.reg[reg_b]
+            return self.reg[reg_a]
         elif op == "MULT":
-            aa = self.reg[reg_a]
-            bb = self.reg[reg_b]
-            self.reg[reg_a] = aa * bb
-            # self.reg[reg_a] *= self.reg[reg_b]
-            # return self.reg[reg_a]
+            # aa = self.reg[reg_a]
+            # bb = self.reg[reg_b]
+            # self.reg[reg_a] = aa * bb
+            self.reg[reg_a] *= self.reg[reg_b]
+            return self.reg[reg_a]
 
         # elif op == "DIV":
         #     self.reg[reg_a] /= self.reg[reg_b]
