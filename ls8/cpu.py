@@ -85,15 +85,6 @@ class CPU:
         """Set an address in RAM to a certain value."""
 
         self.ram[address] = value
-    
-    def halt(self):
-        self.running = False
-
-    def PUSH(self, value):
-        pass
-
-    def POP(self):
-        pass
 
     def trace(self):
         """
@@ -121,26 +112,42 @@ class CPU:
         PRN = 0b01000111
         HLT = 0b00000001
         MULT = 0b10100010
+        PUSH = 0b01000101
+        POP = 0b01000110
+
+        SP = 7
+        self.reg[SP] = 244
 
         self.running = True
-      
-        while self.running is True:
 
+        while self.running is True:
+            
             IR = self.ram_read(self.pc)
             inst_len = ((IR & 0b11000000) >> 6) + 1 # max 3 operands
 
             operand_a = self.ram_read(self.pc + 1)
             operand_b = self.ram_read(self.pc + 2)
-
+            
             if IR == LDI:    # LDI
                 self.reg[operand_a] = operand_b
-                result = operand_b
                 # self.pc += 3
             elif IR == MULT:    # MULT
-                result = self.alu('MULT', operand_a, operand_b)
+                self.alu('MULT', operand_a, operand_b)
                 # self.pc += 3
             elif IR == PRN:  # PRN
-                print(f'printing... {result}')           
+                print(f'printing... {self.reg[operand_a]}')           
+                # self.pc += 2
+            elif IR == PUSH:
+                self.reg[SP] -= 1  # decrement SP (stack pointer)
+                #copy value from register into ram address pointed by SP
+                address = self.reg[SP]
+                self.ram_write(self.reg[operand_a], address)
+                # self.pc += 2
+            elif IR == POP:
+                address = self.reg[SP]
+                # copy value from the SP address into the given register
+                self.reg[operand_a] = self.ram_read(address)
+                self.reg[SP] += 1  # increment SP (stack pointer)
                 # self.pc += 2
             elif IR == HLT:  # HALT
                 self.running = False
@@ -149,3 +156,5 @@ class CPU:
                 self.running = False
 
             self.pc += inst_len
+            # self.trace()
+            # print('--------')
