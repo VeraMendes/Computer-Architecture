@@ -63,6 +63,14 @@ class CPU:
             self.reg[reg_a] //= self.reg[reg_b]
         elif op == "MOD":
             self.reg[reg_a] %= self.reg[reg_b]
+        elif op == "AND":
+            self.reg[reg_a] &= self.reg[reg_b]
+        elif op == "OR":
+            self.reg[reg_a] |= self.reg[reg_b]
+        elif op == "NOT":
+            self.reg[reg_a] = ~self.reg[reg_b]
+        elif op == "XOR":
+            self.reg[reg_a] ^= self.reg[reg_b]
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -80,6 +88,12 @@ class CPU:
     
     def halt(self):
         self.running = False
+
+    def PUSH(self, value):
+        pass
+
+    def POP(self):
+        pass
 
     def trace(self):
         """
@@ -115,15 +129,14 @@ class CPU:
             IR = self.ram_read(self.pc)
             inst_len = ((IR & 0b11000000) >> 6) + 1 # max 3 operands
 
+            operand_a = self.ram_read(self.pc + 1)
+            operand_b = self.ram_read(self.pc + 2)
+
             if IR == LDI:    # LDI
-                operand_a = self.ram_read(self.pc + 1)
-                operand_b = self.ram_read(self.pc + 2)
                 self.reg[operand_a] = operand_b
                 result = operand_b
                 # self.pc += 3
             elif IR == MULT:    # MULT
-                operand_a = self.ram_read(self.pc + 1)
-                operand_b = self.ram_read(self.pc + 2)
                 result = self.alu('MULT', operand_a, operand_b)
                 # self.pc += 3
             elif IR == PRN:  # PRN
