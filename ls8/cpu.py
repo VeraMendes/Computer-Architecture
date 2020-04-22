@@ -116,7 +116,7 @@ class CPU:
         POP = 0b01000110
 
         SP = 7
-        self.reg[SP] = 244
+        self.reg[SP] = 0xF4
 
         self.running = True
 
@@ -128,13 +128,13 @@ class CPU:
             operand_a = self.ram_read(self.pc + 1)
             operand_b = self.ram_read(self.pc + 2)
             
-            if IR == LDI:    # LDI
+            if IR == LDI:
                 self.reg[operand_a] = operand_b
                 # self.pc += 3
-            elif IR == MULT:    # MULT
+            elif IR == MULT:
                 self.alu('MULT', operand_a, operand_b)
                 # self.pc += 3
-            elif IR == PRN:  # PRN
+            elif IR == PRN:
                 print(f'printing... {self.reg[operand_a]}')           
                 # self.pc += 2
             elif IR == PUSH:
