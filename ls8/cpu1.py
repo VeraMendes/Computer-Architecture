@@ -2,6 +2,17 @@
 
 import sys
 
+LDI = 0b10000010
+PRN = 0b01000111
+HLT = 0b00000001
+MULT = 0b10100010
+PUSH = 0b01000101
+POP = 0b01000110
+CALL = 0b01010000
+RET = 0b00010001
+SP = 7
+
+
 class CPU:
     """Main CPU class."""
 
@@ -11,7 +22,56 @@ class CPU:
         self.reg = [0] * 8
         self.ram = [0] * 256
         self.running = True
+        self.instructions = {
+            LDI: self.LDI,
+            PRN: self.PRN,
+            MULT: self.MULT,
+            PUSH: self.PUSH,
+            POP: self.POP,
+            HLT: self.HLT,
+            CALL: self.CALL,
+            RET: self.RET
+        }
 
+    def LDI(self, operand_a, operand_b):
+        self.reg[operand_a] = operand_b
+        # self.pc += 3
+
+    def PRN(self, operand_a, operand_b):
+        print(f'printing... {self.reg[operand_a]}')
+        # self.pc +=2
+    
+    def MULT(self, operand_a, operand_b):
+        self.alu('MULT', operand_a, operand_b)
+        # self.pc +=3
+    
+    def PUSH(self, operand_a, operand_b):
+        # decrement SP (stack pointer)
+        self.reg[SP] -= 1
+        # copy value from register into ram address pointed by SP
+        address = self.reg[SP]
+        self.ram_write(self.reg[operand_a], address)
+        # self.pc += 2
+
+    def POP(self, operand_a, operand_b):
+        address = self.reg[SP]
+        # copy value from the SP address into the given register
+        self.reg[operand_a] = self.ram_read(address)
+        # increment SP (stack pointer)
+        self.reg[SP] += 1
+        # self.pc += 2
+    
+    def CALL(self, operand_a, operand_b):
+        self.reg[SP] -= 1
+        self.ram_write(self.reg[7], self.pc + 2)
+        self.pc = self.reg[a]
+    
+    def RET(self, operand_a, operand_b):
+        self.pc = self.ram_read(self.reg[SP])
+        self.reg[SP] += 1
+
+    def HLT(self, operand_a, operand_b):
+        self.running = False
 
     def load(self, filename):
         """Load a program into memory."""
@@ -29,7 +89,6 @@ class CPU:
 
                 self.ram[address] = int(instruction, 2)
                 address += 1
-
 
     def alu(self, op, reg_a, reg_b):
         """ALU operations."""
@@ -58,7 +117,7 @@ class CPU:
             raise Exception("Unsupported ALU operation")
 
         return self.reg[reg_a]
-    
+
     def ram_read(self, address):
         """Return an address in RAM."""
 
@@ -91,53 +150,18 @@ class CPU:
 
     def run(self):
         """Run the CPU."""
-        LDI = 0b10000010
-        PRN = 0b01000111
-        HLT = 0b00000001
-        MULT = 0b10100010
-        PUSH = 0b01000101
-        POP = 0b01000110
-
-        SP = 7
-        self.reg[SP] = 0xF4   # 244 decimal
-
-        self.running = True
 
         while self.running is True:
-            
             IR = self.ram_read(self.pc)
-            inst_len = ((IR & 0b11000000) >> 6) + 1 # max 3 operands
-
+            # max 3 operands
+            inst_len = ((IR & 0b11000000) >> 6) + 1
             operand_a = self.ram_read(self.pc + 1)
             operand_b = self.ram_read(self.pc + 2)
-            
-            if IR == LDI:
-                self.reg[operand_a] = operand_b
-                # self.pc += 3
-            elif IR == MULT:
-                self.alu('MULT', operand_a, operand_b)
-                # self.pc += 3
-            elif IR == PRN:
-                print(f'printing... {self.reg[operand_a]}')           
-                # self.pc += 2
-            elif IR == PUSH:
-                self.reg[SP] -= 1  # decrement SP (stack pointer)
-                #copy value from register into ram address pointed by SP
-                address = self.reg[SP]
-                self.ram_write(self.reg[operand_a], address)
-                # self.pc += 2
-            elif IR == POP:
-                address = self.reg[SP]
-                # copy value from the SP address into the given register
-                self.reg[operand_a] = self.ram_read(address)
-                self.reg[SP] += 1  # increment SP (stack pointer)
-                # self.pc += 2
-            elif IR == HLT:  # HALT
-                self.running = False
-            else:    
-                print("Unknown instruction")
-                self.running = False
+
+            if int(bin(IR), 2) in self.instructions:
+                self.instructions[IR](operand_a, operand_b)
+            else:
+                print("Invalid instruction")
 
             self.pc += inst_len
             # self.trace()
-            # print('--------')
