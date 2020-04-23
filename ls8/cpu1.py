@@ -5,6 +5,7 @@ import sys
 LDI = 0b10000010
 PRN = 0b01000111
 HLT = 0b00000001
+ADD = 0b10100000
 MULT = 0b10100010
 PUSH = 0b01000101
 POP = 0b01000110
@@ -25,6 +26,7 @@ class CPU:
         self.instructions = {
             LDI: self.LDI,
             PRN: self.PRN,
+            ADD: self.ADD,
             MULT: self.MULT,
             PUSH: self.PUSH,
             POP: self.POP,
@@ -41,6 +43,10 @@ class CPU:
         print(f'printing... {self.reg[operand_a]}')
         # self.pc +=2
     
+    def ADD(self, operand_a, operand_b):
+        self.alu('ADD', operand_a, operand_b)
+        # self.pc +=3
+
     def MULT(self, operand_a, operand_b):
         self.alu('MULT', operand_a, operand_b)
         # self.pc +=3
@@ -60,15 +66,23 @@ class CPU:
         # increment SP (stack pointer)
         self.reg[SP] += 1
         # self.pc += 2
-    
+
     def CALL(self, operand_a, operand_b):
+        # address of the instruction directly after CALL
         self.reg[SP] -= 1
-        self.ram_write(self.reg[7], self.pc + 2)
-        self.pc = self.reg[a]
-    
+        # push that instruction onto the stack
+        self.ram_write(self.pc + 2, self.reg[SP])
+        # PC is set to the address stored in the given register
+        # We jump to that location in RAM
+        self.pc = self.reg[operand_a]
+
     def RET(self, operand_a, operand_b):
-        self.pc = self.ram_read(self.reg[SP])
+        # Pop the value from the top of the stack and store it in the PC.
+        address = self.reg[SP]
+        self.pc = self.ram_read(address)
+        # increment SP (stack pointer)
         self.reg[SP] += 1
+
 
     def HLT(self, operand_a, operand_b):
         self.running = False
@@ -162,6 +176,8 @@ class CPU:
                 self.instructions[IR](operand_a, operand_b)
             else:
                 print("Invalid instruction")
+            if not IR & 0b00010000:
+                self.pc += inst_len
 
-            self.pc += inst_len
+            # self.pc += inst_len
             # self.trace()
