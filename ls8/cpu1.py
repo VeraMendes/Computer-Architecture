@@ -42,7 +42,7 @@ class CPU:
     def PRN(self, operand_a, operand_b):
         print(f'printing... {self.reg[operand_a]}')
         # self.pc +=2
-    
+
     def ADD(self, operand_a, operand_b):
         self.alu('ADD', operand_a, operand_b)
         # self.pc +=3
@@ -50,7 +50,7 @@ class CPU:
     def MULT(self, operand_a, operand_b):
         self.alu('MULT', operand_a, operand_b)
         # self.pc +=3
-    
+
     def PUSH(self, operand_a, operand_b):
         # decrement SP (stack pointer)
         self.reg[SP] -= 1
@@ -82,7 +82,6 @@ class CPU:
         self.pc = self.ram_read(address)
         # increment SP (stack pointer)
         self.reg[SP] += 1
-
 
     def HLT(self, operand_a, operand_b):
         self.running = False
@@ -124,9 +123,13 @@ class CPU:
         elif op == "OR":
             self.reg[reg_a] |= self.reg[reg_b]
         elif op == "NOT":
-            self.reg[reg_a] = ~self.reg[reg_b]
+            self.reg[reg_a] = ~self.reg[reg_a]
         elif op == "XOR":
             self.reg[reg_a] ^= self.reg[reg_b]
+        elif op == "SHR":
+            self.reg[reg_a] = self.reg[reg_a] >> reg_b
+        elif op == "SHL":
+            self.reg[reg_a] = self.reg[reg_a] << reg_b
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -176,7 +179,8 @@ class CPU:
                 self.instructions[IR](operand_a, operand_b)
             else:
                 print("Invalid instruction")
-            if not IR & 0b00010000:
+            # if this instruction does not set the PC
+            if ~ IR & 0b00010000:
                 self.pc += inst_len
 
             # self.pc += inst_len
